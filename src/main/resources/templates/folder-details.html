@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-3">
+          <h3>trello.com</h3>
+        </div>
+        <div class="col-md-2">
+          <h5>All Folders</h5>
+        </div>
+        <div class="col-md-2">
+          <h5>Categories</h5>
+        </div>
+      </div>
+        <div class="row">
+            <h2 th:text="${folder.name}"></h2>
+        </div>
+        <div class="row">
+            <div class="col-md-2">
+                <!-- Button trigger modal -->
+                <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#staticBackdrop" th:style="'width:200px;'">
+                    + New Task
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{'/task-category/add-task'}" method="post" class="formOne">
+                                    <div class="form-group">
+                                        <input type="hidden" th:value="${folder.id}" name="folder-id">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">TASK-TITLE:</label>
+                                        <input type="text" class="form-control" name="task-title">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">TASK-DESCRIPTION:</label>
+                                        <input type="text" class="form-control" name="task-description">
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-success" onclick="addPost()">Add Task</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" th:each="task: ${folder.getTasks()}">
+            <div class="card">
+                <h4 class="card-title" th:text="${task.title}"></h4>
+                <div class="card-body">
+                    <h5 class="card-text" th:text="${task.description}"></h5>
+                    <h5 th:class="${task.getStatus()==0 ? 'card-text text-bg-primary' : 'card-text text-bg-success'}" th:text="${task.getStatus()==0 ? 'TO DO' : 'DONE'}"></h5>
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#staticBackdrop1" th:style="'width:200px;'">
+                        Details
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="staticBackdropLabel1">Modal title</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form th:action="@{'/task-category/update-status'}" method="post" class="formTwo">
+                                        <div class="form-group">
+                                            <input type="hidden" th:value="${task.id}" name="task-id">
+                                        </div>
+                                        <h5>Have you finished task?</h5>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-danger" onclick="updatePost(event)">Finish</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function addPost(){
+            const formOne = document.querySelector('.formOne');
+            formOne.action = '/task-category/add-task';
+            formOne.method = 'POST';
+            formOne.submit();
+        }
+
+        function updatePost(event){
+            const formTwo = event.target.closest('.modal-content').querySelector('.formTwo');
+            formTwo.action = '/task-category/update-status';
+            formTwo.method = 'POST';
+            formTwo.submit();
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+</body>
+</html>
